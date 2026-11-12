@@ -18,7 +18,7 @@ You may also use **Add a card** to transcribe directly beside the image without 
 - Image and crop fingerprints detect identical imports and flag near-identical images. An exact repeat cannot add observations or reopen an archived round in the same shoe. Similar images require a different-deal acknowledgment before extending the shoe. This is an aid, not a physical-card tracker across arbitrary screenshots.
 - **Apply reviewed cards** fills the calculator. **Apply & analyze** also runs its numerical engine. A bust hand can be tracked without running an action simulation.
 
-Screenshot files and model replies stay in memory during review. Backups contain only the applied cards, connection settings, and up to 80 small fingerprint records; they do not contain images. Closing the screenshot dialog cancels an active recognition request. Existing workspaces and older backups are migrated without resetting their cards or journal.
+Screenshot files and model replies stay in memory during review. Backups contain only the applied cards, connection settings, and up to 80 small fingerprint records; they do not contain images. Closing the screenshot dialog cancels an active recognition request, clears the temporary image preview, and releases the selected file. Existing workspaces and older backups are migrated without resetting their cards or journal.
 
 A complete, local-first browser application for **free-play blackjack and Texas Hold’em practice**. No account, paid API, package installation, or external game connection is needed for the calculators. The private hosted version is the easiest way to use it.
 
@@ -67,6 +67,6 @@ Browser local storage contains journal entries, manual observations, rules, and 
 
 ## Verification
 
-Run `node --test tests/engine.test.mjs`. This includes exhaustive five-card category frequencies across all **2,598,960** hands, seven-card edge cases, exact and sampled poker split pots, deterministic simulation cases, blackjack chart/rule cases, card inventory, ace handling, pot arithmetic, and journal arithmetic.
+Run `node --test tests/*.test.mjs`. This includes exhaustive five-card category frequencies across all **2,598,960** hands, seven-card edge cases, exact and sampled poker split pots, deterministic simulation cases, blackjack chart/rule cases, card inventory, ace handling, pot arithmetic, and journal arithmetic.
 
 Run syntax checks with `node --check dist/app.mjs`, `node --check dist/engine.mjs`, `node --check dist/worker.mjs`, and `node --check server.mjs`. No build step or dependencies are needed. `dist/` is the complete deployable application.

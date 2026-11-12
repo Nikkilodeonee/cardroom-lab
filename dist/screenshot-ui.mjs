@@ -1,5 +1,5 @@
 import {RANKS,SUITS} from './engine.mjs';
-import {MAX_IMAGE_BYTES,imageMime,localOrigin,recognizeScreenshot,listVisionModels,differenceHash,screenshotReuse,applyScreenshotReview} from './screenshot.mjs?v=2.1.1';
+import {MAX_IMAGE_BYTES,imageMime,localOrigin,recognizeScreenshot,listVisionModels,differenceHash,screenshotReuse,applyScreenshotReview} from './screenshot.mjs?v=2.1.2';
 
 const html=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
@@ -12,7 +12,7 @@ export function createScreenshotImporter({getState,saveConnection,onApply,toast}
  const picker=document.createElement('input');picker.type='file';picker.id='shot-file';picker.accept='image/png,image/jpeg,image/webp';picker.hidden=true;picker.addEventListener('change',()=>{if(picker.files[0])loadFile(picker.files[0]);});
  const alive=id=>session?.id===id&&root.open;
  const stop=()=>{session?.controller?.abort();};
- function cleanup(){stop();if(session?.url)URL.revokeObjectURL(session.url);session=null;drag=null;serial++;}
+ function cleanup(){stop();if(session?.url)URL.revokeObjectURL(session.url);session=null;drag=null;serial++;picker.value='';root.replaceChildren(picker);}
  root.addEventListener('close',cleanup);
  function open(game='blackjack'){
   if(root.open)return;const ai=getState().ai;
