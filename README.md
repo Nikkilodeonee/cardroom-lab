@@ -1,6 +1,6 @@
 # Cardroom Lab
 
-The interface uses **Tabler 1.7.5** with a custom felt-green, ivory, and burgundy card-table palette. The dashboard, navigation, cards, buttons, forms, and tables are based on Tabler. Its pinned stylesheet is bundled locally at `dist/vendor/tabler-1.7.5.min.css` so there are no runtime CDN requests. The MIT license is included in `dist/vendor/TABLER-LICENSE.txt`.
+The Felt Edition 2.0 interface uses **Tabler 1.7.5** in dark mode, a horizontal navigation bar, and a full cardroom lobby with green and burgundy felt tables. Ivory playing cards and red chips are used throughout. Custom theme styles are in `dist/felt.css`. The dashboard, navigation, cards, buttons, forms, and tables are based on Tabler. Its pinned stylesheet is bundled locally at `dist/vendor/tabler-1.7.5.min.css` so there are no runtime CDN requests. The MIT license is included in `dist/vendor/TABLER-LICENSE.txt`.
 
 The Coach is available from the header button. The main workspace focuses on card entry, calculations, play, and results.
 
