@@ -1,0 +1,6 @@
+.sites-workflow/
+*.tar.gz
+*.zip
+*.log
+.env
+node_modules/

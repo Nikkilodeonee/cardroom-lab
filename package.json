@@ -1,0 +1,8 @@
+{
+  "name": "cardroom-lab",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Local-first blackjack and poker practice companion",
+  "scripts": { "start": "node server.mjs", "test": "node --test tests/*.test.mjs", "check": "node --check dist/app.mjs && node --check dist/engine.mjs && node --check dist/worker.mjs && node --check server.mjs" }
+}

@@ -1,0 +1,52 @@
+# Cardroom Lab
+
+A complete, local-first browser application for **free-play blackjack and Texas Hold’em practice**. No account, paid API, package installation, or external game connection is needed for the calculators. The private hosted version is the easiest way to use it.
+
+## Open the application
+
+Private hosted app: https://cardroom-lab-practice-rm2611.selectecho1.chatgpt.site
+
+For a local copy, run `node server.mjs` in this folder and open http://127.0.0.1:4178. On Windows, `Launch Cardroom Lab.cmd` starts this server if Node.js is on PATH. Node 20 or newer is recommended. No npm dependencies are required. Open through HTTP, rather than double-clicking `index.html`, so browser modules and calculation workers load correctly.
+
+The local and hosted versions have separate browser storage. Use Export backup / Import backup to move your workspace between them. The app can be installed from a supporting browser’s app menu. Its service worker caches the application after the first successful visit for offline use; private-host authentication can still require an online visit in some browsers.
+
+## Included
+
+- Overview with real journal totals and a chip-balance chart. New workspaces start with 10,000 play chips and zero recorded results.
+- Manual blackjack analyzer: rank entry, dealer upcard, finite-shoe inventory, Hi-Lo running/true counts, exact unconditioned next-card bust probability, chart-based recommendations, and simulated action EV with sampling intervals.
+- Separate shoe tracker with observation history, undo, and explicit shuffle resets. Visible hand cards are removed once. Archive moves the current hand to prior observations; round-shuffle mode clears the previous round instead.
+- Full blackjack practice game: US dealer peek, natural payouts, hit/stand/double/split/late surrender, up to four hands, chip accounting, dealer soft-17 rules, no-DAS handling, one-card split aces, and journal recording. A separate practice shoe reshuffles at 75% penetration or every round, depending on settings.
+- Hold’em calculator: hero, community cards, one known opponent, dead cards, 1–5 total opponents, duplicate detection, 10k/20k/50k Monte Carlo trials, exact small-scenario enumeration, equity including split pots, hand distributions, pot odds, and estimated call EV.
+- Strategy drills scored against the selected table rules and 20-card counting sprints, with persistent accuracy totals.
+- Journal with manual results, automatic practice results, filtering, deletion, JSON backup/import with validation, and full CSV export.
+- Statistical coach with contextual explanations, optional generative local AI, responsive layouts, keyboard-accessible controls, and an in-app field guide.
+
+## Local AI chat (optional)
+
+The default **statistical coach** is a transparent rule-based explainer, not an LLM. All math works without a model.
+
+For generative AI, install and start Ollama from its official distribution, download a model that fits your machine (for example, `ollama pull llama3.2`), and confirm it is running. In the app’s Settings, select **Local AI via Ollama**, set the origin to `http://127.0.0.1:11434`, and enter the installed model’s exact name. The app uses `POST /api/chat`, with streaming disabled. No API key is used or collected.
+
+The local version at `http://127.0.0.1:4178` is the simplest integration because Ollama accepts loopback origins by default. For the private hosted version, your browser may require local-network permission and Ollama must allow the exact hosted origin through `OLLAMA_ORIGINS`. See the official [Ollama FAQ](https://docs.ollama.com/faq) and [chat API](https://docs.ollama.com/api/chat). Keep the service bound to loopback. No system configuration is changed by this app.
+
+Only the question, visible cards, rules, and current computed results are supplied to the local model. Hidden practice shoe order and dealer hole cards are excluded. The calculator is authoritative for displayed odds; model prose can be mistaken. Connection failures produce an explicit message plus a statistical-coach explanation. An actual model installation is not bundled or downloaded automatically.
+
+## Math and assumptions
+
+**Blackjack:** 4, 6, or 8 decks; US hole card / peek; double any initial two cards; selectable S17/H17, DAS, late surrender, and 3:2 or 6:5 naturals. Simulations sample without replacement from the entered remaining composition. Dealer hole cards are drawn first, conditioned on a passed blackjack peek. After the selected first action, play follows the baseline chart. EV is net return per initial chip, including added double/split exposure. The 95% intervals describe sampling error only. Simulation rankings are estimates, not an exact optimal finite-shoe strategy solver.
+
+Chart source: [Wizard of Odds multi-deck strategy](https://wizardofodds.com/games/blackjack/strategy/4-decks/). Count definition: [Wizard of Odds Hi-Lo](https://wizardofodds.com/games/blackjack/card-counting/high-low/).
+
+**Poker:** Standard Hold’em, best five out of seven cards. Unknown opponents are uniformly random legal combinations. Exact enumeration is used for one known opponent with 0–2 missing board cards and a complete river against one unknown opponent. Other scenarios are Monte Carlo sampled. Equity awards `1 / number of tied winners` for split pots. No rake, ranges, future betting, bluffing, fold equity, tournament ICM, or side pots are modeled. Enter the entire current pot including the opponent’s outstanding bet but excluding your pending call. Call EV = equity × (pot + call) − call.
+
+No tool predicts shuffled cards, another player’s next bet, or guaranteed wins. Counting information carries forward only through the same persistent finite shoe. The app accepts manual observations and provides its own sandbox practice table; it does not read or automate third-party game sites.
+
+## Persistence
+
+Browser local storage contains journal entries, manual observations, rules, and training totals. Chat and in-progress practice rounds are temporary. Reloading during a round voids it; only settled rounds affect saved results. Export before clearing site data. Backups are schema-validated and import requires a review step before replacement. The journal is limited to 10,000 entries, and CSV export includes all records. Using one active tab avoids conflicting edits.
+
+## Verification
+
+Run `node --test tests/engine.test.mjs`. This includes exhaustive five-card category frequencies across all **2,598,960** hands, seven-card edge cases, exact and sampled poker split pots, deterministic simulation cases, blackjack chart/rule cases, card inventory, ace handling, pot arithmetic, and journal arithmetic.
+
+Run syntax checks with `node --check dist/app.mjs`, `node --check dist/engine.mjs`, `node --check dist/worker.mjs`, and `node --check server.mjs`. No build step or dependencies are needed. `dist/` is the complete deployable application.
