@@ -1,0 +1,64 @@
+.screenshot-header-button { display:inline-flex; align-items:center; gap:7px; font-size:11px; padding:8px 11px; white-space:nowrap; }
+.screenshot-header-button .icon { height:18px; width:18px; }
+.screenshot-modal { max-width:1100px; width:calc(100% - 32px); max-height:92vh; }
+.screenshot-modal .modal-head { padding:18px 22px; }
+.screenshot-modal .modal-head>.icon-btn { font-size:26px; line-height:1; }
+.shot-body { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); gap:26px; max-height:calc(92vh - 160px); overflow:auto; padding:22px; }
+.shot-image-column,.shot-review-column { min-width:0; }
+.shot-dropzone { min-height:225px; display:flex; align-items:center; justify-content:center; padding:14px; background:#081a12; border:1px dashed #5c7050; border-radius:6px; overflow:hidden; }
+.shot-dropzone.has-image { min-height:120px; padding:0; border-style:solid; }
+.shot-placeholder { text-align:center; color:#9bac8e; padding:20px 10px; }
+.shot-placeholder>span { display:block; font-size:45px; color:#a68c58; margin-bottom:10px; }
+.shot-placeholder h3 { font-size:14px; color:#e0dfbe; }
+.shot-placeholder p { font-size:11px; color:#819b75; margin-top:10px; }
+.shot-image-wrap { position:relative; display:inline-block; max-width:100%; line-height:0; overflow:hidden; touch-action:none; cursor:crosshair; user-select:none; }
+.shot-image-wrap img { display:block; max-width:100%; max-height:330px; width:auto; height:auto; pointer-events:none; }
+.shot-crop { position:absolute; border:2px solid #d8bb75; box-shadow:0 0 0 2000px #0008; pointer-events:none; min-height:1px; min-width:1px; }
+.shot-image-tools { margin:13px 0; gap:7px; }
+.shot-image-tools .btn { min-height:31px; font-size:11px; padding:7px 10px; }
+.shot-image-column>.tiny { overflow-wrap:anywhere; }
+.shot-connection,.shot-crop-details { border:1px solid #33492f; border-radius:5px; margin:13px 0; padding:11px 13px; color:#b4c59b; }
+.shot-connection>summary,.shot-crop-details>summary { cursor:pointer; font-size:11px; font-weight:550; color:#cabb85; overflow-wrap:anywhere; }
+.shot-connection[open]>summary { margin-bottom:15px; }
+.shot-connection .field { margin-bottom:12px; }
+.shot-connection label { font-size:10px; }
+.shot-connection .form-control { font-size:11px; padding:8px 9px; }
+.shot-connection>.tiny { margin:14px 0 0; }
+.shot-crop-fields { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin-top:12px; }
+.shot-crop-fields label { color:#8fa479; font-size:9px; }
+.shot-crop-fields .form-control { font-size:11px; padding:7px; margin-top:5px; }
+.shot-read-actions { margin-top:17px; }
+.shot-read-actions .btn { width:100%; }
+.shot-status { font-size:11px; color:#b9c99a; margin:12px 0 0; line-height:1.75; }
+.shot-notice { border:1px solid #384f30; background:#152d1d; color:#9fb783; padding:10px 12px; border-radius:4px; font-size:10px; line-height:1.8; margin:12px 0; overflow-wrap:anywhere; }
+.shot-notice.amber { background:#382f19; border-color:#66532b; color:#d6bd7b; }
+.shot-notice.error { background:#3d2424; border-color:#78504d; color:#e8b0aa; }
+.shot-review-column>.lab-row { flex-wrap:wrap; gap:10px; }
+.shot-review-column h3 { font-size:14px; color:#e3e4c7; }
+.shot-game.form-select { width:140px; font-size:11px; padding-block:7px; }
+.shot-review-column>.tiny { margin-top:12px; }
+.shot-card-list { max-height:390px; overflow:auto; margin:12px 0; }
+.shot-review-empty { border:1px dashed #3c5231; border-radius:4px; color:#829c6f; padding:27px 14px; font-size:11px; text-align:center; line-height:1.8; }
+.shot-card-row { display:grid; grid-template-columns:31px minmax(0,1fr) 19px; gap:9px; align-items:center; border:1px solid #344c2d; border-radius:5px; padding:10px; margin-bottom:8px; background:#10281a; }
+.shot-card-row.is-uncertain { border-left:3px solid #b19351; background:#252e1b; }
+.shot-card-glyph { background:#f7f0dc; color:#20382a; width:30px; height:43px; border-radius:3px; padding:4px; font:600 16px Georgia,serif; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.shot-card-glyph.red { color:#a53443; }
+.shot-card-glyph small { font-size:13px; margin-top:2px; }
+.shot-row-fields { display:grid; grid-template-columns:1.45fr .9fr .9fr; gap:7px; min-width:0; }
+.shot-row-fields label { min-width:0; }
+.shot-row-fields label>span { display:block; font-size:8px; color:#8aa073; margin-bottom:5px; white-space:nowrap; }
+.shot-row-fields .form-select { font-size:11px; padding:7px 21px 7px 7px; min-width:0; border-radius:3px; }
+.shot-remove { font-size:21px; padding:4px 0; align-self:center; }
+.shot-new-card { grid-column:2; display:flex; align-items:center; gap:7px; color:#bfca9c; font-size:10px; }
+.shot-new-card input,.shot-check input { height:14px; width:14px; accent-color:#b8a261; flex-shrink:0; }
+.shot-round-mode { margin-top:19px; }
+.shot-round-mode small { display:block; color:#829c70; font-size:10px; line-height:1.75; margin-top:8px; }
+.shot-check { display:flex; align-items:flex-start; gap:9px; color:#c5cda8; font-size:11px; line-height:1.75; margin-top:15px; }
+.shot-check input { margin-top:3px; }
+.shot-confirm { padding:13px; background:#203721; border:1px solid #485b32; border-radius:4px; margin:18px 0 10px; }
+.screenshot-modal .modal-foot { padding:15px 22px; flex-wrap:wrap; }
+@media(max-width:1100px) { .screenshot-header-button { padding:7px 9px; } }
+@media(max-width:760px) { .screenshot-header-button>span { display:none; } .screenshot-header-button { border-color:transparent!important; padding:7px; min-width:32px; min-height:32px; } }
+@media(max-width:700px) { .screenshot-modal { width:calc(100% - 20px); } .shot-body { grid-template-columns:1fr; padding:17px; gap:24px; max-height:calc(92vh - 180px); } .shot-image-wrap img { max-height:300px; } .shot-card-list { max-height:430px; } .screenshot-modal .modal-head { padding:16px 17px; } .screenshot-modal .modal-foot { padding:12px 17px; gap:7px; } .screenshot-modal .modal-foot .btn { font-size:10px; padding:8px 10px; flex:1 1 auto; } .shot-connection { margin-bottom:12px; } }
+@media(max-width:420px) { .shot-card-row { grid-template-columns:minmax(0,1fr) 18px; padding:9px; gap:7px; } .shot-card-glyph { display:none; } .shot-row-fields { grid-template-columns:1.4fr .8fr .8fr; gap:5px; } .shot-row-fields .form-select { font-size:10px; padding-inline:6px 20px; } .shot-new-card { grid-column:1; } .shot-game.form-select { width:130px; } .shot-crop-fields { grid-template-columns:1fr 1fr; } .shot-review-column h3 { font-size:13px; } }
+@media(max-width:350px) { .felt-header-inner { padding-inline:12px; gap:8px; } .felt-tools .icon-btn { padding:5px; } .screenshot-header-button { padding:5px; min-width:29px; min-height:29px; } }

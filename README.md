@@ -4,6 +4,22 @@ The Felt Edition 2.0 interface uses **Tabler 1.7.5** in dark mode, a horizontal 
 
 The Coach is available from the header button. The main workspace focuses on card entry, calculations, play, and results.
 
+## Read a game screenshot
+
+Use **Read screenshot** in the header. Choose or drop a PNG, JPEG, or WebP image (up to 12 MB / 40 megapixels), or paste an image with Ctrl+V. Drag over the preview to crop the table; **Precise crop** also provides keyboard-editable crop percentages. Only the selected region is supplied to the model, resized to a maximum 2,048-pixel longest side.
+
+For automatic recognition, expand **Vision connection**, enter the localhost Ollama origin, and use **Find vision models** to discover installed image-capable models. A vision model must already be installed and running through Ollama; a text-only model cannot read screenshots. The app checks `/api/show` for image support, then sends a base64 image to `/api/chat` with a JSON card schema. The coach’s text model and the screenshot model are configured independently. No cloud API key is collected. Browser local-network/origin permissions may be required for the hosted app; the local app can be easier to connect. See [Ollama vision](https://docs.ollama.com/capabilities/vision) and [structured outputs](https://docs.ollama.com/capabilities/structured-outputs).
+
+You may also use **Add a card** to transcribe directly beside the image without connecting a model. Every included card can be corrected or reassigned. Poker requires known ranks and suits; blackjack needs ranks and exactly one dealer upcard. Ignore decorative cards and unreadable/hidden cards. Check the review confirmation before applying; a model response never edits the calculator automatically.
+
+- **Update the current round** replaces the blackjack player hand and upcard. It does not append those cards again.
+- **Start a new round** archives the prior visible hand before entering the next one. Round-shuffled games reset instead.
+- Under **Other seen**, only cards explicitly checked **New to shoe** are appended. Leave previously counted cards unchecked.
+- Image and crop fingerprints detect identical imports and flag near-identical images. An exact repeat cannot add observations or reopen an archived round in the same shoe. Similar images require a different-deal acknowledgment before extending the shoe. This is an aid, not a physical-card tracker across arbitrary screenshots.
+- **Apply reviewed cards** fills the calculator. **Apply & analyze** also runs its numerical engine. A bust hand can be tracked without running an action simulation.
+
+Screenshot files and model replies stay in memory during review. Backups contain only the applied cards, connection settings, and up to 80 small fingerprint records; they do not contain images. Closing the screenshot dialog cancels an active recognition request. Existing workspaces and older backups are migrated without resetting their cards or journal.
+
 A complete, local-first browser application for **free-play blackjack and Texas Hold’em practice**. No account, paid API, package installation, or external game connection is needed for the calculators. The private hosted version is the easiest way to use it.
 
 ## Open the application
