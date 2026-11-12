@@ -105,6 +105,10 @@ a { color:#d0c08d; }
 .panel-head h2.card-title,.panel-head h2 { color:#e7e8d5; }
 .panel-head p { color:#81987d; }
 .panel-body,.panel-body.card-body { color:#bac9b0; }
+.table-summary>div { border-bottom-color:#30492e; }
+.table-summary dt { color:#a0b294; }
+.table-summary dd { color:#e2e8cf; }
+.table-summary small { color:#97ad87; }
 .stat-card { background:#10251b; }
 .stat-value { color:#e6e7ce; }
 .stat-top { color:#9aac90; }
@@ -173,6 +177,8 @@ a { color:#d0c08d; }
 .empty p { color:#87a078; }
 .empty>.icon { color:#788e56; }
 .chart-axis { color:#718a63; }
+.chart>path { stroke:#314d33; }
+.chart>polyline { stroke:#a4bb83; }
 .table { --tblr-table-bg:transparent; --tblr-table-color:#b9caa3; }
 .table th { background:#0e2518; color:#8fa87b; border-color:#31492c; }
 .table td { background:transparent; color:#bbcca4; border-color:#2a4227; }
