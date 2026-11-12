@@ -1,4 +1,4 @@
-# Cardroom Lab
+# Cardroom Lab 2.2 · Live table monitoring
 
 The Felt Edition 2.0 interface uses **Tabler 1.7.5** in dark mode, a horizontal navigation bar, and a full cardroom lobby with green and burgundy felt tables. Ivory playing cards and red chips are used throughout. Custom theme styles are in `dist/felt.css`. The dashboard, navigation, cards, buttons, forms, and tables are based on Tabler. Its pinned stylesheet is bundled locally at `dist/vendor/tabler-1.7.5.min.css` so there are no runtime CDN requests. The MIT license is included in `dist/vendor/TABLER-LICENSE.txt`.
 
@@ -59,7 +59,7 @@ Chart source: [Wizard of Odds multi-deck strategy](https://wizardofodds.com/game
 
 **Poker:** Standard Hold’em, best five out of seven cards. Unknown opponents are uniformly random legal combinations. Exact enumeration is used for one known opponent with 0–2 missing board cards and a complete river against one unknown opponent. Other scenarios are Monte Carlo sampled. Equity awards `1 / number of tied winners` for split pots. No rake, ranges, future betting, bluffing, fold equity, tournament ICM, or side pots are modeled. Enter the entire current pot including the opponent’s outstanding bet but excluding your pending call. Call EV = equity × (pot + call) − call.
 
-No tool predicts shuffled cards, another player’s next bet, or guaranteed wins. Counting information carries forward only through the same persistent finite shoe. The app accepts manual observations and provides its own sandbox practice table; it does not read or automate third-party game sites.
+No tool predicts shuffled cards, another player’s next bet, or guaranteed wins. Counting information carries forward only through the same persistent finite shoe. The app accepts manual observations and provides its own sandbox practice table; it reads only the screen source you explicitly share and does not place bets or control third-party games.
 
 ## Persistence
 
@@ -70,3 +70,17 @@ Browser local storage contains journal entries, manual observations, rules, and 
 Run `node --test tests/*.test.mjs`. This includes exhaustive five-card category frequencies across all **2,598,960** hands, seven-card edge cases, exact and sampled poker split pots, deterministic simulation cases, blackjack chart/rule cases, card inventory, ace handling, pot arithmetic, and journal arithmetic.
 
 Run syntax checks with `node --check dist/app.mjs`, `node --check dist/engine.mjs`, `node --check dist/worker.mjs`, and `node --check server.mjs`. No build step or dependencies are needed. `dist/` is the complete deployable application.
+
+## Live screen monitoring (2.2)
+
+Open **Share screen** in the header. Choose Blackjack or Hold’em, enter an installed Ollama vision model (or Find vision models), then click **Share & monitor** and choose the game tab/window in the browser’s native picker. Screen capture requires a supported desktop browser on HTTPS or localhost; an embedded browser may block it, in which case open the hosted link in Chrome or Edge. Audio is disabled. No frames are recorded, uploaded to the Site, included in backups, or stored in the service worker. Recognition sends only the selected capture area to your localhost vision endpoint.
+
+The monitor runs one request at a time, with a selectable 2/5/10-second delay after each completed read. Model latency adds to that delay. Two matching reads confirm a layout. It counts newly exposed cards once, updates the active hand and dealer upcard, retains cards from other seats and revealed dealer cards in the count, and preserves prior observations when a confirmed clear table or a changed visible hand number starts the next round. Poker cards reset each hand; blackjack respects the selected persistent-shoe or shuffle-every-round rule. No OCR system can infer unseen discarded/burnt cards or detect every shuffle.
+
+Use **Continue** to resume the current table and count, **Next round** when the old cards have gone but no clear interval was recognized, and **Fresh shoe** after a shuffle. Repeated old layouts are held after a manual round advance. If a layout changes ambiguously or exceeds the physical deck inventory, counting is held for review. The tracked-card panel shows exactly what the ledger contains. Pause recognition before dragging a capture area or editing its percentages. Changing the capture area during a round can require a new round or shoe to establish a consistent view.
+
+The count and chart update automatically. Hold’em equity recalculates for legal complete streets. For automatic blackjack action EV, enable the US-peek confirmation only when the selected rules apply and dealer blackjack has been ruled out. Action EV is not run once multiple dealer cards are visible or the active hand is bust. The simulator does not model future bets or guarantee wins.
+
+Closing the monitor panel keeps sharing active, with a persistent **Screen is shared** bar and **Stop sharing** control. Pause stops recognition but keeps the stream active. Stop, the browser’s own sharing Stop, page exit, or setup failure stop every media track and clear the preview and temporary frame buffer. Recognition errors retry while holding the last valid cards. Keep the source visible and the app open; browsers can throttle background tabs and minimize/occlude captured windows. Tracking metadata and counted ranks can be resumed after stopping; no automatic permission or capture resumes on reload.
+
+Verification includes repeated/jittering frames, duplicate ranks, hits, hole-card reveals, clear/ambiguous round boundaries, hidden cards, impossible inventories, shuffle mode, resume, legal poker cards, request serialization, late permission/results, pause, browser Stop and setup/network failures. A running local vision model and a user-selected capture source are required for real recognition; neither is bundled.

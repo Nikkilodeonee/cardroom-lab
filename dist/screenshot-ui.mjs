@@ -1,5 +1,5 @@
 import {RANKS,SUITS} from './engine.mjs';
-import {MAX_IMAGE_BYTES,imageMime,localOrigin,recognizeScreenshot,listVisionModels,differenceHash,screenshotReuse,applyScreenshotReview} from './screenshot.mjs?v=2.1.2';
+import {MAX_IMAGE_BYTES,imageMime,localOrigin,recognizeScreenshot,listVisionModels,differenceHash,screenshotReuse,applyScreenshotReview} from './screenshot.mjs?v=2.2.0';
 
 const html=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));

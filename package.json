@@ -1,12 +1,12 @@
 {
   "name": "cardroom-lab",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "private": true,
   "type": "module",
   "description": "Local-first blackjack and poker practice companion",
   "scripts": {
     "start": "node server.mjs",
     "test": "node --test tests/*.test.mjs",
-    "check": "node --check dist/app.mjs && node --check dist/engine.mjs && node --check dist/worker.mjs && node --check server.mjs && node --check dist/screenshot.mjs && node --check dist/screenshot-ui.mjs"
+    "check": "node --check dist/app.mjs && node --check dist/engine.mjs && node --check dist/worker.mjs && node --check server.mjs && node --check dist/screenshot.mjs && node --check dist/screenshot-ui.mjs && node --check dist/live-tracker.mjs && node --check dist/capture-session.mjs && node --check dist/live-ui.mjs"
   }
 }
