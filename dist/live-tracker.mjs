@@ -18,8 +18,8 @@ export async function readLiveTable({endpoint,model,base64,game,signal,fetchImpl
  const d=await r.json();return parseLiveRead(d.message?.content);
 }
 const key=c=>[c.zone,c.rank,c.suit||''].join(':');
-function pairs(a,b,limit=Infinity){
- const candidates=[];a.forEach((c,i)=>b.forEach((d,j)=>{if(key(c)===key(d)){const distance=c.x===null?0:Math.hypot(c.x-d.x,c.y-d.y);if(distance<=limit)candidates.push({i,j,distance});}}));
+function pairs(a,b,limit=Infinity,allowZoneChange=false){
+ const candidates=[];a.forEach((c,i)=>b.forEach((d,j)=>{const distance=c.x===null?0:Math.hypot(c.x-d.x,c.y-d.y);if(key(c)===key(d)||allowZoneChange&&c.x!==null&&distance<80&&c.rank===d.rank&&c.suit===d.suit){if(distance<=limit)candidates.push({i,j,distance});}}));
  candidates.sort((x,y)=>x.distance-y.distance);const usedA=new Set(),usedB=new Set(),out=[];
  for(const c of candidates)if(!usedA.has(c.i)&&!usedB.has(c.j)){out.push(c);usedA.add(c.i);usedB.add(c.j);}return {out,usedA,usedB};
 }
@@ -27,22 +27,23 @@ function same(a,b){return a.roundId===b.roundId&&a.clear===b.clear&&a.cards.leng
 export function tableSignature(s,game){return JSON.stringify(game==='blackjack'?[s.rules,s.observed,s.hand,s.up]:s.poker);}
 export function startLedger(s,game,mode='continue'){
  const fresh=mode==='fresh',tracks=[];
- if(game==='blackjack'&&mode==='continue'&&!s.sample){s.hand.forEach(r=>tracks.push({rank:RANKS[r],suit:null,zone:'hero',x:null,y:null}));if(s.up!==null)tracks.push({rank:RANKS[s.up],suit:null,zone:'dealer',x:null,y:null});}
+ if(game==='blackjack'&&mode!=='fresh'&&!s.sample){s.hand.forEach(r=>tracks.push({rank:RANKS[r],suit:null,zone:'hero',x:null,y:null}));if(s.up!==null)tracks.push({rank:RANKS[s.up],suit:null,zone:'dealer',x:null,y:null});}
  // Suits do not matter to blackjack counts; keeping them null also matches manually entered ranks.
- return {version:1,game,base:game==='blackjack'&&!fresh?s.observed.slice():[],past:game==='blackjack'&&mode==='next'&&!s.sample?[...s.hand,...(s.up===null?[]:[s.up])]:[],tracks,round:0,roundId:null};
+ return {version:1,game,base:game==='blackjack'&&!fresh?s.observed.slice():[],past:game==='blackjack'&&mode==='next'&&!s.sample?[...s.hand,...(s.up===null?[]:[s.up])]:[],tracks:mode==='next'?[]:tracks,guard:mode==='next'?tracks:null,round:0,roundId:null};
 }
 export function validateLedger(d,decks=8){
  if(!d||d.version!==1||!['blackjack','poker'].includes(d.game)||!Number.isSafeInteger(d.round)||d.round<0)throw new Error('Invalid live tracking record.');
  const ranks=a=>Array.isArray(a)&&a.length<=416&&a.every(r=>Number.isInteger(r)&&r>=0&&r<13);
  if(!ranks(d.base)||!ranks(d.past)||!Array.isArray(d.tracks)||d.tracks.length>48)throw new Error('Invalid live card ledger.');
- const tracks=d.tracks.map(c=>{if(!c||!RANKS.includes(c.rank)||!zones.includes(c.zone)||(c.suit!==null&&!['s','h','d','c'].includes(c.suit))||!['x','y'].every(k=>c[k]===null||(Number.isFinite(c[k])&&c[k]>=0&&c[k]<=1000)))throw new Error('Invalid tracked card.');return {rank:c.rank,suit:c.suit,zone:c.zone,x:c.x,y:c.y};});
+ const clean=c=>{if(!c||!RANKS.includes(c.rank)||!zones.includes(c.zone)||(c.suit!==null&&!['s','h','d','c'].includes(c.suit))||!['x','y'].every(k=>c[k]===null||(Number.isFinite(c[k])&&c[k]>=0&&c[k]<=1000)))throw new Error('Invalid tracked card.');return {rank:c.rank,suit:c.suit,zone:c.zone,x:c.x,y:c.y};};
+ const tracks=d.tracks.map(clean);if(d.guard&&(!Array.isArray(d.guard)||d.guard.length>48))throw new Error('Invalid pending round.');const guard=d.guard?.map(clean)||null;
  if(d.game==='blackjack')remainingCounts(decks,[...d.base,...d.past,...tracks.map(c=>RANKS.indexOf(c.rank))]);
- return {version:1,game:d.game,base:d.base.slice(),past:d.past.slice(),tracks,round:d.round,roundId:typeof d.roundId==='string'?d.roundId.slice(0,80):null};
+ return {version:1,game:d.game,base:d.base.slice(),past:d.past.slice(),tracks,guard,round:d.round,roundId:typeof d.roundId==='string'?d.roundId.slice(0,80):null};
 }
 export function projectLedger(s,d){
  const next=structuredClone(s);let canAnalyze=false;
  if(d.game==='blackjack'){
-  const hero=d.tracks.filter(c=>c.zone==='hero').sort((a,b)=>a.x-b.x),dealer=d.tracks.filter(c=>c.zone==='dealer').sort((a,b)=>a.x-b.x);
+  const hero=d.tracks.filter(c=>c.zone==='hero').sort((a,b)=>a.x-b.x),dealer=d.tracks.filter(c=>c.zone==='dealer');
   if(hero.length>16)throw new Error('Too many cards in the active hand. Select one hand in the capture area.');
   next.hand=hero.map(c=>RANKS.indexOf(c.rank));next.up=dealer.length?RANKS.indexOf(dealer[0].rank):null;
   const all=[...d.base,...d.past,...d.tracks.map(c=>RANKS.indexOf(c.rank))];remainingCounts(s.rules.decks,all);
@@ -61,10 +62,10 @@ export function projectLedger(s,d){
  return {state:next,canAnalyze,game:d.game};
 }
 export class LiveTracker{
- constructor(ledger,{decks=6,shuffleEachRound=false}={}){this.data=validateLedger(ledger,decks);this.pending=null;this.streak=0;this.blocked='';this.decks=decks;this.shuffleEachRound=shuffleEachRound;}
+ constructor(ledger,{decks=6,shuffleEachRound=false}={}){this.data=validateLedger(ledger,decks);this.guard=this.data.guard;this.pending=null;this.streak=0;this.blocked='';this.decks=decks;this.shuffleEachRound=shuffleEachRound;}
  resetCandidate(){this.pending=null;this.streak=0;}
  nextRound(fresh=false,guardOldTable=false){
-  const d=this.data;this.guard=guardOldTable&&d.tracks.length?structuredClone(d.tracks):null;d.past=d.game==='blackjack'&&!fresh&&!this.shuffleEachRound?[...d.past,...d.tracks.map(c=>RANKS.indexOf(c.rank))]:[];
+  const d=this.data;this.guard=guardOldTable&&d.tracks.length?structuredClone(d.tracks):null;d.guard=this.guard;d.past=d.game==='blackjack'&&!fresh&&!this.shuffleEachRound?[...d.past,...d.tracks.map(c=>RANKS.indexOf(c.rank))]:[];
   if(fresh||this.shuffleEachRound)d.base=[];d.tracks=[];d.round++;d.roundId=null;this.blocked='';this.resetCandidate();return d;
  }
  feed(read,state){
@@ -75,17 +76,17 @@ export class LiveTracker{
   }
   const snapshot={roundId:read.roundId||null,clear:read.clear&&!read.cards.length,cards:read.cards.map(c=>({...c,suit:this.data.game==='blackjack'?null:c.suit}))};
   if(snapshot.cards.some((c,i)=>snapshot.cards.some((d,j)=>j>i&&Math.hypot(c.x-d.x,c.y-d.y)<10))){this.resetCandidate();return {status:'uncertain',message:'Overlapping card detections need a clearer read. Counts are held.'};}
-  if(this.guard&&this.guard.length===snapshot.cards.length&&pairs(this.guard,snapshot.cards).out.length===this.guard.length){this.resetCandidate();return {status:'waiting',message:'Waiting for the old table to change before counting the next deal.'};}
+  if(this.guard?.length&&pairs(this.guard,snapshot.cards).out.length===this.guard.length){this.resetCandidate();return {status:'waiting',message:'Waiting for the old table to change before counting the next deal.'};}
   if(!this.pending||!same(snapshot,this.pending)){this.pending=snapshot;this.streak=1;return {status:'confirming',message:'Confirming this layout with another read…'};}
   this.pending=snapshot;this.streak++;this.guard=null;
   if(snapshot.clear){
-   if(!this.data.tracks.length)return {status:'unchanged',message:'Table clear · waiting for the next deal.'};
+   if(!this.data.tracks.length){const guarded=!!this.data.guard;this.data.guard=null;return {status:guarded?'updated':'unchanged',message:'Table clear · waiting for the next deal.',...(guarded?projectLedger(state,this.data):{})};}
    const old=structuredClone(this.data);this.nextRound();try{return {status:'round',message:'Table cleared · counted cards retained.',...projectLedger(state,this.data)};}catch(e){this.data=old;throw e;}
   }
-  const d=structuredClone(this.data);
+  const d=structuredClone(this.data);d.guard=null;
   if(roundChange){d.past=d.game==='blackjack'&&!this.shuffleEachRound?[...d.past,...d.tracks.map(c=>RANKS.indexOf(c.rank))]:[];if(this.shuffleEachRound)d.base=[];d.tracks=[];d.round++;}
   if(snapshot.roundId)d.roundId=snapshot.roundId;
-  const match=pairs(d.tracks,snapshot.cards);
+  const match=pairs(d.tracks,snapshot.cards,Infinity,true);
   const missing=d.tracks.length-match.out.length,newCards=snapshot.cards.filter((_,i)=>!match.usedB.has(i));
   if(missing){
    if(!newCards.length)return {status:'uncertain',message:'Some tracked cards are covered or missing. Counts are held.'};
