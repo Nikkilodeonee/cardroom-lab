@@ -1,5 +1,9 @@
 # Cardroom Lab
 
+The interface uses **Tabler 1.7.5** with a custom felt-green, ivory, and burgundy card-table palette. The dashboard, navigation, cards, buttons, forms, and tables are based on Tabler. Its pinned stylesheet is bundled locally at `dist/vendor/tabler-1.7.5.min.css` so there are no runtime CDN requests. The MIT license is included in `dist/vendor/TABLER-LICENSE.txt`.
+
+The Coach is available from the header button. The main workspace focuses on card entry, calculations, play, and results.
+
 A complete, local-first browser application for **free-play blackjack and Texas Hold’em practice**. No account, paid API, package installation, or external game connection is needed for the calculators. The private hosted version is the easiest way to use it.
 
 ## Open the application
