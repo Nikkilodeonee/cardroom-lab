@@ -1,3 +1,4 @@
+import {localModelFetch} from './model-transport.mjs?v=2.3.0';
 import {RANKS,shoeStats} from './engine.mjs';
 import {localOrigin,listVisionModels,advanceScreenshotRound} from './screenshot.mjs?v=2.2.0';
 import {LiveTracker,startLedger,validateLedger,tableSignature,projectLedger,readLiveTable} from './live-tracker.mjs?v=2.2.0';
@@ -45,7 +46,7 @@ export function createLiveMonitor({getState,saveConnection,onApply,toast}){
   const suits={s:'♠',h:'♥',d:'♦',c:'♣'};
   $('[data-live-cards]').innerHTML=d.tracks.length?['hero','dealer','board','opponent','other'].map(zone=>{const cs=d.tracks.filter(c=>c.zone===zone);return cs.length?`<div><small>${({hero:'Your active hand',dealer:'Dealer',board:'Community',opponent:'Opponent',other:'Other exposed'})[zone]}</small><span>${cs.map(c=>`<b class="live-card ${c.suit==='h'||c.suit==='d'?'red':''}">${escape(c.rank)}<i>${suits[c.suit]||'♠'}</i></b>`).join('')}</span></div>`:'';}).join(''):'<p class="muted">Waiting for visible cards in the next deal.</p>';
  }
- async function checkModel(signal){const r=await fetch(localOrigin(config.endpoint)+'/api/show',{method:'POST',headers:{'Content-Type':'application/json'},signal,body:JSON.stringify({model:config.model})});if(!r.ok)throw new Error('Could not load this Ollama model. Check its installed name and allowed origins.');const d=await r.json();if(!Array.isArray(d.capabilities)||!d.capabilities.includes('vision'))throw new Error('Choose an installed model that supports vision.');}
+ async function checkModel(signal){const r=await localModelFetch(localOrigin(config.endpoint)+'/api/show',{method:'POST',headers:{'Content-Type':'application/json'},signal,body:JSON.stringify({model:config.model})});if(!r.ok)throw new Error('Could not load this Ollama model. Check its installed name and allowed origins.');const d=await r.json();if(!Array.isArray(d.capabilities)||!d.capabilities.includes('vision'))throw new Error('Choose an installed model that supports vision.');}
  const session=new CaptureSession({getDisplayMedia:options=>{
   if(!globalThis.isSecureContext||!navigator.mediaDevices?.getDisplayMedia)throw new Error('Screen sharing needs a supported desktop browser over HTTPS or localhost. Open this app in Chrome or Edge.');
   return navigator.mediaDevices.getDisplayMedia(options);

@@ -1,4 +1,27 @@
-# Cardroom Lab 2.2 · Live table monitoring
+# Cardroom Lab 2.3 · Windows desktop app
+
+## Install on Windows
+
+Download **Cardroom-Lab-Setup-2.3.0-x64.exe** from the private GitHub repository’s Releases page and run it. The setup wizard installs for your Windows account, creates a Start menu entry, offers a desktop shortcut, and adds an uninstaller to Windows Apps. The desktop runtime is included: no separate Node.js installation or browser window is required. The installed program is **Cardroom Lab.exe**.
+
+The installer is unsigned because no Windows code-signing certificate was provided. Local launch verification on the build PC was blocked by Windows Application Control; that policy was left unchanged. The automated code checks pass, but an installed-app launch has not been verified on this PC. Use a trusted signing/approval process on managed devices.
+
+The numerical calculators work offline. Optional AI chat, screenshot reading, and continuous table recognition require Ollama and an installed model; screen recognition needs a vision model. The desktop build’s localhost-only bridge connects directly to Ollama, so it does not require changing OLLAMA_ORIGINS. The window picker lets you choose a game window or screen explicitly; audio is off. Closing the app stops sharing. Desktop browser data is separate from the hosted website: transfer existing cards and journal entries using Export backup / Import backup. Uninstall preserves your saved desktop workspace.
+
+## Build the Windows installer
+
+With Node 22.12 or newer and npm, run:
+
+```powershell
+npm ci
+npm test
+npm run build:windows
+```
+
+The executable is written to `release/Cardroom-Lab-Setup-2.3.0-x64.exe`. This build packages the app with the pinned Electron runtime, then compiles `desktop/installer.nsi` with the official NSIS toolchain pinned by electron-builder. It never launches an installer or uninstaller during compilation. The uninstaller removes an exact generated list of application files and shortcuts, preserves user data, and never recursively deletes a user-selected install directory. To launch the development desktop app, run `npm run desktop`. Build artifacts, test profiles, caches, and dependencies are ignored by Git.
+
+Desktop runtime design follows [Electron’s security guidance](https://www.electronjs.org/docs/latest/tutorial/security): a secure custom protocol, isolated sandboxed renderers, no renderer Node access, an explicit source picker, and a bounded localhost-only model bridge with cancellation and redirects disabled. It bundles the current pinned Electron version recorded in package-lock.json.
+
 
 The Felt Edition 2.0 interface uses **Tabler 1.7.5** in dark mode, a horizontal navigation bar, and a full cardroom lobby with green and burgundy felt tables. Ivory playing cards and red chips are used throughout. Custom theme styles are in `dist/felt.css`. The dashboard, navigation, cards, buttons, forms, and tables are based on Tabler. Its pinned stylesheet is bundled locally at `dist/vendor/tabler-1.7.5.min.css` so there are no runtime CDN requests. The MIT license is included in `dist/vendor/TABLER-LICENSE.txt`.
 
